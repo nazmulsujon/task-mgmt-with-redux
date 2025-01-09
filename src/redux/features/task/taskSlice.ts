@@ -18,6 +18,22 @@ const initialState: IInitialState = {
       isCompleted: false,
       dueDate: "12-15",
     },
+    {
+      id: uuidv4(),
+      title: "Task 2",
+      description: "This is task 1",
+      priority: "high",
+      isCompleted: false,
+      dueDate: "12-18",
+    },
+    {
+      id: uuidv4(),
+      title: "Task 3",
+      description: "This is task 1",
+      priority: "high",
+      isCompleted: false,
+      dueDate: "12-19",
+    },
   ],
   filter: "all",
 };
