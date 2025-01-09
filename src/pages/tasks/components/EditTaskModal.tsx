@@ -5,7 +5,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -28,26 +27,35 @@ import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAppDispatch } from "@/redux/hook"
-import { addTask } from "@/redux/features/task/taskSlice"
+import { editTask } from "@/redux/features/task/taskSlice"
 import { ITask } from "@/types"
 
-export function AddTaskModal() {
-    const form = useForm()
-    const dispatch = useAppDispatch()
+interface EditTaskModalProps {
+    task: ITask;
+    open: boolean;
+    onOpenChange: (open: boolean) => void
+}
+
+export function EditTaskModal({ task, open, onOpenChange }: EditTaskModalProps) {
+    const form = useForm({
+        defaultValues: {
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            dueDate: task.dueDate,
+        },
+    });
+    const dispatch = useAppDispatch();
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
-        console.log(data)
-        dispatch(addTask(data as ITask))
-    }
+        dispatch(editTask({ ...task, ...data }));
+    };
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="default">Add Task</Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={onOpenChange} >
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Add Task</DialogTitle>
+                    <DialogTitle>Edit Task</DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
@@ -121,7 +129,7 @@ export function AddTaskModal() {
                                                     )}
                                                 >
                                                     {field.value ? (
-                                                        format(new Date(field.value), "PPP") // Format the string back to display
+                                                        format(field.value, "PPP")
                                                     ) : (
                                                         <span>Pick a date</span>
                                                     )}
@@ -133,25 +141,23 @@ export function AddTaskModal() {
                                             <Calendar
                                                 className="w-full"
                                                 mode="single"
-                                                selected={field.value ? new Date(field.value) : undefined} // Convert string back to Date
-                                                onSelect={(date) =>
-                                                    field.onChange(date ? date.toISOString() : "")
-                                                } // Store as ISO string
+                                                // @ts-ignore 
+                                                selected={field.value}
+                                                onSelect={field.onChange}
                                                 initialFocus
                                             />
+
                                         </PopoverContent>
                                     </Popover>
                                 </FormItem>
                             )}
                         />
-
                         <DialogFooter>
                             <Button type="submit">Save changes</Button>
                         </DialogFooter>
                     </form>
                 </Form>
-
             </DialogContent>
         </Dialog>
-    )
+    );
 }
